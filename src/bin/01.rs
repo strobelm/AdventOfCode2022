@@ -40,13 +40,13 @@ mod tests {
     #[test]
     fn test_invalid_input() {
         let input = "invalid";
-        assert_eq!(part_one(&input), None);
+        assert_eq!(part_one(input), None);
     }
 
     #[test]
     fn test_too_few_input_values() {
         let input = "100\n100\n\n200\n200";
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(input), None);
     }
 
     #[test]

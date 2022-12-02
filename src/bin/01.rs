@@ -1,14 +1,21 @@
 pub fn part_one(input: &str) -> Option<u32> {
     let nums = split_and_parse(input);
-    let max = nums.iter().max().copied();
-    max
+    match nums {
+        Ok(nums) => nums.iter().max().copied(),
+        Err(_) => None,
+    }
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let mut nums = split_and_parse(input);
-    nums.sort();
-    let sum = nums.iter().rev().take(3).sum();
-    Some(sum)
+    let res = split_and_parse(input);
+    match res {
+        Ok(res) if res.len() > 2 => {
+            let nums: Vec<u32> = res.to_vec();
+            let sum = nums.into_iter().rev().take(3).sum::<u32>();
+            Some(sum)
+        }
+        _ => None,
+    }
 }
 
 fn main() {
@@ -17,14 +24,10 @@ fn main() {
     advent_of_code::solve!(2, part_two, input);
 }
 
-fn split_and_parse(input: &str) -> Vec<u32> {
-    let result = input
+fn split_and_parse(input: &str) -> Result<Vec<u32>, std::num::ParseIntError> {
+    let result: Result<Vec<u32>, std::num::ParseIntError> = input
         .split("\n\n")
-        .map(|elf| {
-            elf.lines()
-                .map(|line| line.parse::<u32>().expect("could not parse int value"))
-                .sum()
-        })
+        .map(|elf| elf.lines().map(|line| line.parse::<u32>()).sum())
         .collect();
 
     result

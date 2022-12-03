@@ -34,7 +34,7 @@ pub enum Hand {
 
 pub fn parse_hand(s: &str) -> Result<Hand, String> {
     let t = s.trim();
-    
+
     match t {
         "X" | "A" => Ok(Hand::Rock),
         "Y" | "B" => Ok(Hand::Paper),

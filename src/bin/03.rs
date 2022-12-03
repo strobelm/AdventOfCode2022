@@ -16,7 +16,7 @@ pub fn part_two(input: &str) -> Option<u32> {
         let els: Vec<HashSet<char>> = chunk.map(|it| it.chars().clone().collect()).collect();
 
         let hash_intersection = els[1..].iter().fold(els[0].clone(), |acc, xs| {
-            acc.intersection(&xs).cloned().collect()
+            acc.intersection(xs).cloned().collect()
         });
         let intersection = Vec::from_iter(hash_intersection.iter().cloned());
 

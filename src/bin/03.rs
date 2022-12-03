@@ -13,15 +13,12 @@ pub fn part_one(input: &str) -> Option<u32> {
 pub fn part_two(input: &str) -> Option<u32> {
     let mut sum_of_all_values = 0;
     for chunk in &input.lines().into_iter().chunks(3) {
-        let vec = Vec::from_iter(chunk);
-        let h_fst: HashSet<char> = vec[0].chars().clone().collect();
-        let h_scd: HashSet<char> = vec[1].chars().clone().collect();
-        let h_thr: HashSet<char> = vec[2].chars().clone().collect();
+        let els: Vec<HashSet<char>> = chunk.map(|it| it.chars().clone().collect()).collect();
 
-        let intersection: Vec<char> = h_fst
-            .intersection(&h_scd.intersection(&h_thr).cloned().collect())
-            .cloned()
-            .collect();
+        let hash_intersection = els[1..].iter().fold(els[0].clone(), |acc, xs| {
+            acc.intersection(&xs).cloned().collect()
+        });
+        let intersection = Vec::from_iter(hash_intersection.iter().cloned());
 
         sum_of_all_values += calculate_value(intersection);
     }

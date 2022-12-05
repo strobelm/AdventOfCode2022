@@ -26,8 +26,8 @@ struct Harbor {
     moves: Vec<Move>,
 }
 impl Harbor {
-    fn build(iinput: &str) -> Harbor {
-        let (harbor_str, moves_str) = iinput.split("\n\n").next_tuple().unwrap();
+    fn build(input: &str) -> Harbor {
+        let (harbor_str, moves_str) = input.split("\n\n").next_tuple().unwrap();
 
         let last_line = harbor_str.lines().last().unwrap();
         let n_stacks: usize = last_line
@@ -57,21 +57,17 @@ impl Harbor {
     fn apply_moves(&mut self) {
         for mv in &self.moves {
             for _ in 0..mv.amount {
-                let it = &self.stacks[mv.from].pop_back().unwrap();
-                let _ = &self.stacks[mv.to].push_back(it.to_string());
+                let it = self.stacks[mv.from].pop_back().unwrap();
+                self.stacks[mv.to].push_back(it.to_string());
             }
         }
     }
 
     fn apply_moves_9001(&mut self) {
         for mv in &self.moves {
-            let len = self.stacks[mv.from].len();
-            let drained = &self.stacks[mv.from]
-                .drain(len - mv.amount..)
-                .collect::<VecDeque<String>>();
-            for it in drained {
-                let _ = &self.stacks[mv.to].push_back(it.to_string());
-            }
+            let idx = self.stacks[mv.from].len() - mv.amount;
+            let mut split = self.stacks[mv.from].split_off(idx);
+            self.stacks[mv.to].append(&mut split);
         }
     }
 

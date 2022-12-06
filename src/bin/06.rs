@@ -1,3 +1,5 @@
+use itertools::Itertools;
+
 pub fn part_one(input: &str) -> Option<u32> {
     Some(find_index(input, 4) as u32)
 }
@@ -8,17 +10,12 @@ pub fn part_two(input: &str) -> Option<u32> {
 
 fn find_index(input: &str, offset: usize) -> usize {
     input
-        .char_indices()
-        .position(|(i, _)| all_different(&input[i..i + offset]))
+        .chars()
+        .collect::<Vec<char>>()
+        .windows(offset)
+        .position(|w| w.iter().all_unique())
         .unwrap()
         + offset
-}
-
-fn all_different(input: &str) -> bool {
-    input.chars().enumerate().all(|(i, c)| {
-        let sub: String = input[i + 1..].try_into().unwrap();
-        !sub.contains(c)
-    })
 }
 
 fn main() {

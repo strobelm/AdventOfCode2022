@@ -3,8 +3,7 @@ pub fn part_one(input: &str) -> Option<u32> {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let idx = find_index(input, 14);
-    Some(idx as u32)
+    Some(find_index(input, 14) as u32)
 }
 
 fn find_index(input: &str, offset: usize) -> usize {

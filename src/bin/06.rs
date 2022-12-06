@@ -15,13 +15,10 @@ fn find_index(input: &str, offset: usize) -> usize {
 }
 
 fn all_different(input: &str) -> bool {
-    for (i, c) in input.chars().enumerate() {
+    input.chars().enumerate().all(|(i, c)| {
         let sub: String = input[i + 1..].try_into().unwrap();
-        if sub.contains(c) {
-            return false;
-        }
-    }
-    true
+        !sub.contains(c)
+    })
 }
 
 fn main() {

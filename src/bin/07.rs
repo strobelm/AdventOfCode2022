@@ -12,12 +12,17 @@ pub fn part_two(input: &str) -> Option<u32> {
 
     let mut subdirs = parse(&mut input.lines());
     subdirs.sort();
-    let total_dir_size = subdirs.pop().unwrap();
-    let needed = needed_size + total_dir_size - filesystem_size;
 
-    let min = subdirs.iter().find(|&d| d >= &needed).unwrap();
+    let all_dir_sized_added_up = subdirs.pop().unwrap();
+    let unused_space = filesystem_size - all_dir_sized_added_up;
+    let least_amount_to_free = needed_size - unused_space;
 
-    Some(*min)
+    Some(
+        *subdirs
+            .iter()
+            .find(|&d| d >= &least_amount_to_free)
+            .unwrap(),
+    )
 }
 
 fn parse<'a>(input: &mut impl Iterator<Item = &'a str>) -> Vec<u32> {

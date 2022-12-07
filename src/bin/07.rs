@@ -13,16 +13,12 @@ pub fn part_two(input: &str) -> Option<u32> {
     let mut subdirs = parse(&mut input.lines());
     subdirs.sort();
 
-    let all_dir_sized_added_up = subdirs.pop().unwrap();
+    let all_dir_sized_added_up = subdirs.pop()?;
     let unused_space = filesystem_size - all_dir_sized_added_up;
     let least_amount_to_free = needed_size - unused_space;
 
-    Some(
-        *subdirs
-            .iter()
-            .find(|&d| d >= &least_amount_to_free)
-            .unwrap(),
-    )
+    let min_amount = subdirs.iter().find(|&d| d >= &least_amount_to_free)?;
+    Some(*min_amount)
 }
 
 fn parse<'a>(input: &mut impl Iterator<Item = &'a str>) -> Vec<u32> {
@@ -34,11 +30,12 @@ fn parse<'a>(input: &mut impl Iterator<Item = &'a str>) -> Vec<u32> {
             Some(l) if l.starts_with("dir") || l.starts_with("$ ls") => (),
             Some(l) if l.starts_with("$ cd") => {
                 subdirs.append(&mut parse(input));
-                total += subdirs.last().unwrap();
+                total += subdirs.last().unwrap_or(&0);
             }
             Some(l) => {
-                let (size, _) = l.split_once(' ').unwrap();
-                total += size.parse::<u32>().unwrap();
+                if let Some((size, _)) = l.split_once(' ') {
+                    total += size.parse::<u32>().unwrap_or(0);
+                }
             }
         }
     }

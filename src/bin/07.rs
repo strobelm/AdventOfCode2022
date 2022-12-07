@@ -11,11 +11,10 @@ pub fn part_two(input: &str) -> Option<u32> {
     let needed_size = 30_000_000;
 
     let mut subdirs = parse(&mut input.lines());
-
     subdirs.sort();
     let total_dir_size = subdirs.pop().unwrap();
-
     let needed = needed_size + total_dir_size - filesystem_size;
+
     let min = subdirs.iter().find(|&d| d >= &needed).unwrap();
 
     Some(*min)

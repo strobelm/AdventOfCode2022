@@ -36,7 +36,7 @@ pub fn part_two(input: &str) -> Option<u32> {
         })
         .collect();
     // .collect::<Vec<u32>>();
-    dbg!(res);
+    // dbg!(res);
     // .product();
     // Some(res as u32)
     None
@@ -74,18 +74,20 @@ fn get_view(input: Vec<u32>, idx: usize) -> (usize, usize) {
 
     let lower_visible = input[..idx]
         .iter()
-        .enumerate()
         .rev()
+        .enumerate()
         .find(|(_, t)| *t >= &el)
         .map(|(i, _)| idx.abs_diff(i))
+        // .unwrap_or(99);
         .unwrap_or(idx);
 
     let upper_visible = input[idx + 1..]
         .iter()
         .enumerate()
         .find(|(_, t)| *t >= &el)
-        .map(|(i, _)| idx.abs_diff(i))
-        .unwrap_or(input.len() - idx);
+        .map(|(i, _)| idx.abs_diff(i) + 1)
+        // .unwrap_or(99);
+        .unwrap_or(input.len() - idx - 1);
 
     // dbg!(lower_visible);
     // dbg!(upper_visible);
@@ -93,6 +95,9 @@ fn get_view(input: Vec<u32>, idx: usize) -> (usize, usize) {
     // let upper_visible = input[idx + 1..].iter().all(|t| *t < el);
 
     // lower_visible || upper_visible
+    dbg!(input);
+    dbg!((idx, el));
+    dbg!((lower_visible, upper_visible));
     (lower_visible, upper_visible)
 }
 

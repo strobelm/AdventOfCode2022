@@ -8,7 +8,7 @@ pub fn part_one(input: &str) -> Option<u32> {
                 .enumerate()
                 .map(|(i, _)| match (i, j) {
                     (_, j) if j == 0 || j == mat.len() - 1 => true,
-                    _ => is_visible(r.to_vec(), i) || is_visible(get_column(mat.clone(), i), j),
+                    _ => is_visible(r, i) || is_visible(&get_column(&mat, i), j),
                 })
                 .filter(|b| *b)
                 .count()
@@ -19,7 +19,7 @@ pub fn part_one(input: &str) -> Option<u32> {
 
 pub fn part_two(input: &str) -> Option<u32> {
     let mat = build_matrix(input.trim());
-    let res: Vec<Vec<usize>> = mat
+    let res: usize = mat
         .iter()
         .enumerate()
         .map(|(j, r)| {
@@ -27,18 +27,19 @@ pub fn part_two(input: &str) -> Option<u32> {
                 .enumerate()
                 .map(|(i, _)| match (i, j) {
                     (_, j) if j == 0 || j == mat.len() - 1 => 0,
-                    _ => get_view(r.to_vec(), i) * get_view(get_column(mat.clone(), i), j),
+                    _ => get_view(r.to_vec(), i) * get_view(get_column(&mat, i), j),
                 })
-                .collect()
+                .max()
+                .unwrap()
         })
-        .collect();
+        .max()
+        .unwrap();
 
-    let res: &usize = res.iter().flat_map(|v| v.iter().max()).max()?;
-    Some(*res as u32)
+    Some(res as u32)
 }
 
 type Matrix = Vec<Vec<u32>>;
-fn get_column(mat: Matrix, j: usize) -> Vec<u32> {
+fn get_column(mat: &Matrix, j: usize) -> Vec<u32> {
     mat.iter().map(|v| v[j]).collect()
 }
 
@@ -49,7 +50,7 @@ fn build_matrix(input: &str) -> Matrix {
         .collect()
 }
 
-fn is_visible(input: Vec<u32>, idx: usize) -> bool {
+fn is_visible(input: &Vec<u32>, idx: usize) -> bool {
     let el: u32 = input[idx];
     if idx == 0 || idx == input.len() - 1 {
         return true;

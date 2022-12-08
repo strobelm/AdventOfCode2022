@@ -19,27 +19,22 @@ pub fn part_one(input: &str) -> Option<u32> {
 
 pub fn part_two(input: &str) -> Option<u32> {
     let mat = build_matrix(input.trim());
-    let res: Vec<Vec<((usize, usize), (usize, usize))>> = mat
+    let res: Vec<Vec<usize>> = mat
         .iter()
         .enumerate()
         .map(|(j, r)| {
             r.iter()
                 .enumerate()
                 .map(|(i, _)| match (i, j) {
-                    (_, j) if j == 0 || j == mat.len() - 1 => ((0, 0), (0, 0)),
-                    _ => (
-                        get_view(r.to_vec(), i),
-                        get_view(get_column(mat.clone(), i), j),
-                    ),
+                    (_, j) if j == 0 || j == mat.len() - 1 => 0,
+                    _ => get_view(r.to_vec(), i) * get_view(get_column(mat.clone(), i), j),
                 })
                 .collect()
         })
         .collect();
-    // .collect::<Vec<u32>>();
-    dbg!(res);
-    // .product();
-    // Some(res as u32)
-    None
+
+    let res: &usize = res.iter().flat_map(|v| v.iter().max()).max()?;
+    Some(*res as u32)
 }
 
 type Matrix = Vec<Vec<u32>>;
@@ -66,10 +61,10 @@ fn is_visible(input: Vec<u32>, idx: usize) -> bool {
     lower_visible || upper_visible
 }
 
-fn get_view(input: Vec<u32>, idx: usize) -> (usize, usize) {
+fn get_view(input: Vec<u32>, idx: usize) -> usize {
     let el: u32 = input[idx];
     if idx == 0 || idx == input.len() - 1 {
-        return (0, 0);
+        return 0;
     }
 
     let lower_visible = input[..idx]
@@ -78,7 +73,6 @@ fn get_view(input: Vec<u32>, idx: usize) -> (usize, usize) {
         .enumerate()
         .find(|(_, t)| *t >= &el)
         .map(|(i, _)| i + 1)
-        // .unwrap_or(99);
         .unwrap_or(idx);
 
     let upper_visible = input[idx + 1..]
@@ -86,22 +80,9 @@ fn get_view(input: Vec<u32>, idx: usize) -> (usize, usize) {
         .enumerate()
         .find(|(_, t)| *t >= &el)
         .map(|(i, _)| i + 1)
-        // .unwrap_or(99);
         .unwrap_or(input.len() - idx - 1);
 
-    // dbg!(lower_visible);
-    // dbg!(upper_visible);
-    // 1
-    // let upper_visible = input[idx + 1..].iter().all(|t| *t < el);
-
-    // lower_visible || upper_visible
-    // if el == 5 && idx == 2 {
-    if el == 4 {
-        dbg!(input);
-        dbg!((idx, el));
-        dbg!((lower_visible, upper_visible));
-    }
-    (lower_visible, upper_visible)
+    lower_visible * upper_visible
 }
 
 fn main() {
@@ -123,6 +104,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 8);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(8));
     }
 }

@@ -77,7 +77,7 @@ fn get_view(input: Vec<u32>, idx: usize) -> (usize, usize) {
         .rev()
         .enumerate()
         .find(|(_, t)| *t >= &el)
-        .map(|(i, _)| idx.abs_diff(i))
+        .map(|(i, _)| i + 1)
         // .unwrap_or(99);
         .unwrap_or(idx);
 
@@ -95,9 +95,11 @@ fn get_view(input: Vec<u32>, idx: usize) -> (usize, usize) {
     // let upper_visible = input[idx + 1..].iter().all(|t| *t < el);
 
     // lower_visible || upper_visible
-    dbg!(input);
-    dbg!((idx, el));
-    dbg!((lower_visible, upper_visible));
+    if el == 5 && idx == 2 {
+        dbg!(input);
+        dbg!((idx, el));
+        dbg!((lower_visible, upper_visible));
+    }
     (lower_visible, upper_visible)
 }
 

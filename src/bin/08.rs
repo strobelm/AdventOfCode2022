@@ -27,7 +27,7 @@ pub fn part_two(input: &str) -> Option<u32> {
                 .enumerate()
                 .map(|(i, _)| match (i, j) {
                     (_, j) if j == 0 || j == mat.len() - 1 => 0,
-                    _ => get_view(r.to_vec(), i) * get_view(get_column(&mat, i), j),
+                    _ => get_view(&r, i) * get_view(&get_column(&mat, i), j),
                 })
                 .max()
                 .unwrap()
@@ -62,7 +62,7 @@ fn is_visible(input: &Vec<u32>, idx: usize) -> bool {
     lower_visible || upper_visible
 }
 
-fn get_view(input: Vec<u32>, idx: usize) -> usize {
+fn get_view(input: &Vec<u32>, idx: usize) -> usize {
     let el: u32 = input[idx];
     if idx == 0 || idx == input.len() - 1 {
         return 0;

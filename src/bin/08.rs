@@ -27,7 +27,7 @@ pub fn part_two(input: &str) -> Option<u32> {
                 .enumerate()
                 .map(|(i, _)| match (i, j) {
                     (_, j) if j == 0 || j == mat.len() - 1 => 0,
-                    _ => get_view(&r, i) * get_view(&get_column(&mat, i), j),
+                    _ => get_view(r, i) * get_view(&get_column(&mat, i), j),
                 })
                 .max()
                 .unwrap()

@@ -88,8 +88,8 @@ impl Tail {
         match is_touching {
             true => self.pos,
             _ => {
-                let x = if dir.x == 0 { 0 } else { dir.x / dir.x.abs() };
-                let y = if dir.y == 0 { 0 } else { dir.y / dir.y.abs() };
+                let x = dir.x.signum() * dir.x.abs().clamp(0, 1);
+                let y = dir.y.signum() * dir.y.abs().clamp(0, 1);
 
                 let new_pos = self.pos + Coord { x, y };
                 self.visited.insert(new_pos);

@@ -6,20 +6,16 @@ use std::{
 };
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let mut head = Head::new(input);
-    let mut tail = Tail::new();
-
-    while !head.moves.is_empty() {
-        let pos = head.execute_move();
-        tail.follow(&pos);
-    }
-
-    Some(tail.visited.len() as u32)
+    Some(calc_n_visisted::<1>(input))
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
+    Some(calc_n_visisted::<9>(input))
+}
+
+fn calc_n_visisted<const N: usize>(input: &str) -> u32 {
     let mut head = Head::new(input);
-    let mut tails = vec![Tail::new(); 9];
+    let mut tails = vec![Tail::new(); N];
 
     while !head.moves.is_empty() {
         let mut pos = head.execute_move();
@@ -28,7 +24,7 @@ pub fn part_two(input: &str) -> Option<u32> {
         }
     }
 
-    Some(tails.last().unwrap().visited.len() as u32)
+    tails.last().unwrap().visited.len() as u32
 }
 
 #[derive(Debug, Clone)]

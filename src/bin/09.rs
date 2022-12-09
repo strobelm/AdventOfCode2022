@@ -1,16 +1,11 @@
-use std::{
-    collections::{HashSet, VecDeque},
-    ops,
-    str::FromStr,
-    string,
-};
+use std::{collections::HashSet, ops, str::FromStr, string};
 
 pub fn part_one(input: &str) -> Option<u32> {
     let mut head = Head::new(input);
     let mut tail = Tail::new();
 
-    while head.has_moves() {
-        let pos = head.execute_move();
+    for i in 0..head.moves.len() {
+        let pos = head.execute_move(head.moves[i]);
         tail.follow(&pos);
     }
 
@@ -21,8 +16,8 @@ pub fn part_two(input: &str) -> Option<u32> {
     let mut head = Head::new(input);
     let mut tails = vec![Tail::new(); 9];
 
-    while head.has_moves() {
-        let mut pos = head.execute_move();
+    for i in 0..head.moves.len() {
+        let mut pos = head.execute_move(head.moves[i]);
         for tail in tails.iter_mut() {
             pos = tail.follow(&pos);
         }
@@ -34,7 +29,7 @@ pub fn part_two(input: &str) -> Option<u32> {
 #[derive(Debug, Clone)]
 struct Head {
     pos: Coord,
-    moves: VecDeque<Direction>,
+    moves: Vec<Direction>,
 }
 
 impl Head {
@@ -53,21 +48,15 @@ impl Head {
         Head { pos, moves }
     }
 
-    fn execute_move(&mut self) -> Coord {
-        if let Some(el) = self.moves.pop_front() {
-            match el {
-                Direction::Up => self.pos = self.pos + Coord { x: 0, y: 1 },
-                Direction::Down => self.pos = self.pos + Coord { x: 0, y: -1 },
-                Direction::Right => self.pos = self.pos + Coord { x: 1, y: 0 },
-                Direction::Left => self.pos = self.pos + Coord { x: -1, y: 0 },
-            }
+    fn execute_move(&mut self, mv: Direction) -> Coord {
+        match mv {
+            Direction::Up => self.pos = self.pos + Coord { x: 0, y: 1 },
+            Direction::Down => self.pos = self.pos + Coord { x: 0, y: -1 },
+            Direction::Right => self.pos = self.pos + Coord { x: 1, y: 0 },
+            Direction::Left => self.pos = self.pos + Coord { x: -1, y: 0 },
         }
 
         self.get_pos()
-    }
-
-    fn has_moves(&self) -> bool {
-        !self.moves.is_empty()
     }
 
     fn get_pos(&self) -> Coord {

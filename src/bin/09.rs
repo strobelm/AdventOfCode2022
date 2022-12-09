@@ -77,20 +77,20 @@ impl Tail {
             visited: HashSet::from([pos]),
         }
     }
+
     fn follow(&mut self, head_pos: &Coord) -> Coord {
         let dir = *head_pos - self.pos;
         let is_touching = dir.x.abs() <= 1 && dir.y.abs() <= 1;
 
-        match is_touching {
-            true => self.pos,
-            _ => {
-                let x = dir.x.signum() * dir.x.abs().clamp(0, 1);
-                let y = dir.y.signum() * dir.y.abs().clamp(0, 1);
+        if is_touching {
+            self.pos
+        } else {
+            let x = dir.x.signum();
+            let y = dir.y.signum();
 
-                self.pos = self.pos + Coord { x, y };
-                self.visited.insert(self.pos);
-                self.pos
-            }
+            self.pos = self.pos + Coord { x, y };
+            self.visited.insert(self.pos);
+            self.pos
         }
     }
 }

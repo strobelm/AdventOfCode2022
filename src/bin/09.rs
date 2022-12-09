@@ -87,11 +87,9 @@ impl Tail {
                 let x = dir.x.signum() * dir.x.abs().clamp(0, 1);
                 let y = dir.y.signum() * dir.y.abs().clamp(0, 1);
 
-                let new_pos = self.pos + Coord { x, y };
-                self.visited.insert(new_pos);
-                self.pos = new_pos;
-
-                new_pos
+                self.pos = self.pos + Coord { x, y };
+                self.visited.insert(self.pos);
+                self.pos
             }
         }
     }

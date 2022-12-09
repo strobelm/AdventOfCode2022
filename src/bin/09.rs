@@ -56,10 +56,6 @@ impl Head {
             Direction::Left => self.pos = self.pos + Coord { x: -1, y: 0 },
         }
 
-        self.get_pos()
-    }
-
-    fn get_pos(&self) -> Coord {
         self.pos
     }
 }

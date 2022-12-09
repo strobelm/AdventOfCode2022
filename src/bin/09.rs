@@ -10,8 +10,8 @@ pub fn part_one(input: &str) -> Option<u32> {
     let mut tail = Tail::new();
 
     while head.has_moves() {
-        head.execute_move();
-        tail.follow(&head.get_pos());
+        let pos = head.execute_move();
+        tail.follow(&pos);
     }
 
     Some(tail.visited.len() as u32)
@@ -22,11 +22,9 @@ pub fn part_two(input: &str) -> Option<u32> {
     let mut tails = vec![Tail::new(); 9];
 
     while head.has_moves() {
-        head.execute_move();
-        let mut cur_head_pos: Coord = head.get_pos();
+        let mut pos = head.execute_move();
         for tail in tails.iter_mut() {
-            tail.follow(&cur_head_pos);
-            cur_head_pos = tail.get_pos();
+            pos = tail.follow(&pos);
         }
     }
 
@@ -47,7 +45,7 @@ impl Head {
             .flat_map(|l| {
                 let (d, n) = l
                     .split_once(' ')
-                    .map(|(d, n)| (d.parse::<Direction>().unwrap(), n.parse::<i16>().unwrap()))
+                    .map(|(d, n)| (d.parse::<Direction>().unwrap(), n.parse::<i8>().unwrap()))
                     .unwrap();
                 vec![d; n as usize]
             })
@@ -55,7 +53,7 @@ impl Head {
         Head { pos, moves }
     }
 
-    fn execute_move(&mut self) {
+    fn execute_move(&mut self) -> Coord {
         if let Some(el) = self.moves.pop_front() {
             match el {
                 Direction::Up => self.pos = self.pos + Coord { x: 0, y: 1 },
@@ -64,6 +62,8 @@ impl Head {
                 Direction::Left => self.pos = self.pos + Coord { x: -1, y: 0 },
             }
         }
+
+        self.get_pos()
     }
 
     fn has_moves(&self) -> bool {
@@ -89,29 +89,30 @@ impl Tail {
             visited: HashSet::from([pos]),
         }
     }
-    fn follow(&mut self, head_pos: &Coord) {
+    fn follow(&mut self, head_pos: &Coord) -> Coord {
         let dir = *head_pos - self.pos;
         let is_touching = dir.x.abs() <= 1 && dir.y.abs() <= 1;
-        if is_touching {
-            return;
+
+        match is_touching {
+            true => self.pos,
+            _ => {
+                let x = if dir.x == 0 { 0 } else { dir.x / dir.x.abs() };
+                let y = if dir.y == 0 { 0 } else { dir.y / dir.y.abs() };
+
+                let new_pos = self.pos + Coord { x, y };
+                self.visited.insert(new_pos);
+                self.pos = new_pos;
+
+                new_pos
+            }
         }
-
-        let x = if dir.x == 0 { 0 } else { dir.x / dir.x.abs() };
-        let y = if dir.y == 0 { 0 } else { dir.y / dir.y.abs() };
-
-        let new_pos = self.pos + Coord { x, y };
-        self.visited.insert(new_pos);
-        self.pos = new_pos;
-    }
-    fn get_pos(&self) -> Coord {
-        self.pos
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 struct Coord {
-    x: i16,
-    y: i16,
+    x: i8,
+    y: i8,
 }
 impl ops::Add<Coord> for Coord {
     type Output = Coord;

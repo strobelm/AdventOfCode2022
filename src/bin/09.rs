@@ -54,12 +54,13 @@ impl Head {
     }
 
     fn execute_move(&mut self) -> Coord {
-        match Some(self.moves.pop_front().unwrap()) {
-            Some(Direction::Up) => self.pos = self.pos + Coord { x: 0, y: 1 },
-            Some(Direction::Down) => self.pos = self.pos + Coord { x: 0, y: -1 },
-            Some(Direction::Right) => self.pos = self.pos + Coord { x: 1, y: 0 },
-            Some(Direction::Left) => self.pos = self.pos + Coord { x: -1, y: 0 },
-            None => (),
+        if let Some(mv) = self.moves.pop_front() {
+            match mv {
+                Direction::Up => self.pos = self.pos + Coord { x: 0, y: 1 },
+                Direction::Down => self.pos = self.pos + Coord { x: 0, y: -1 },
+                Direction::Right => self.pos = self.pos + Coord { x: 1, y: 0 },
+                Direction::Left => self.pos = self.pos + Coord { x: -1, y: 0 },
+            }
         }
 
         self.pos

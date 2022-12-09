@@ -108,29 +108,6 @@ impl Tail {
     }
 }
 
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 9);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 9);
-        assert_eq!(part_one(&input), Some(13));
-    }
-
-    #[test]
-    fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 9);
-        assert_eq!(part_two(&input), Some(1));
-    }
-}
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 struct Coord {
     x: i16,
@@ -173,5 +150,28 @@ impl FromStr for Direction {
             "D" => Ok(Direction::Down),
             _ => unreachable!(),
         }
+    }
+}
+
+fn main() {
+    let input = &advent_of_code::read_file("inputs", 9);
+    advent_of_code::solve!(1, part_one, input);
+    advent_of_code::solve!(2, part_two, input);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        let input = advent_of_code::read_file("examples", 9);
+        assert_eq!(part_one(&input), Some(13));
+    }
+
+    #[test]
+    fn test_part_two() {
+        let input = advent_of_code::read_file("examples", 9);
+        assert_eq!(part_two(&input), Some(1));
     }
 }

@@ -1,11 +1,16 @@
-use std::{collections::HashSet, ops, str::FromStr, string};
+use std::{
+    collections::{HashSet, VecDeque},
+    ops,
+    str::FromStr,
+    string,
+};
 
 pub fn part_one(input: &str) -> Option<u32> {
     let mut head = Head::new(input);
     let mut tail = Tail::new();
 
-    for i in 0..head.moves.len() {
-        let pos = head.execute_move(head.moves[i]);
+    while !head.moves.is_empty() {
+        let pos = head.execute_move();
         tail.follow(&pos);
     }
 
@@ -16,8 +21,8 @@ pub fn part_two(input: &str) -> Option<u32> {
     let mut head = Head::new(input);
     let mut tails = vec![Tail::new(); 9];
 
-    for i in 0..head.moves.len() {
-        let mut pos = head.execute_move(head.moves[i]);
+    while !head.moves.is_empty() {
+        let mut pos = head.execute_move();
         for tail in tails.iter_mut() {
             pos = tail.follow(&pos);
         }
@@ -29,7 +34,7 @@ pub fn part_two(input: &str) -> Option<u32> {
 #[derive(Debug, Clone)]
 struct Head {
     pos: Coord,
-    moves: Vec<Direction>,
+    moves: VecDeque<Direction>,
 }
 
 impl Head {
@@ -48,12 +53,13 @@ impl Head {
         Head { pos, moves }
     }
 
-    fn execute_move(&mut self, mv: Direction) -> Coord {
-        match mv {
-            Direction::Up => self.pos = self.pos + Coord { x: 0, y: 1 },
-            Direction::Down => self.pos = self.pos + Coord { x: 0, y: -1 },
-            Direction::Right => self.pos = self.pos + Coord { x: 1, y: 0 },
-            Direction::Left => self.pos = self.pos + Coord { x: -1, y: 0 },
+    fn execute_move(&mut self) -> Coord {
+        match Some(self.moves.pop_front().unwrap()) {
+            Some(Direction::Up) => self.pos = self.pos + Coord { x: 0, y: 1 },
+            Some(Direction::Down) => self.pos = self.pos + Coord { x: 0, y: -1 },
+            Some(Direction::Right) => self.pos = self.pos + Coord { x: 1, y: 0 },
+            Some(Direction::Left) => self.pos = self.pos + Coord { x: -1, y: 0 },
+            None => (),
         }
 
         self.pos

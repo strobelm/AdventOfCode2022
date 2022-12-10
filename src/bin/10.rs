@@ -23,6 +23,22 @@ pub fn part_one(input: &str) -> Option<i32> {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
+    let mut cpu = CPU::new(input);
+
+    let mut cyc = 1;
+    while !cpu.stack.is_empty() {
+        cpu.tick();
+        if (cpu.reg - 1..=cpu.reg + 1).contains(&cyc) {
+            print!("#")
+        } else {
+            print!(".");
+        }
+        if cyc % 40 == 0 {
+            println!();
+            cyc = 0;
+        }
+        cyc += 1;
+    }
     None
 }
 

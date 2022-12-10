@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 
 pub fn part_one(input: &str) -> Option<i32> {
-    let mut cpu = CPU::new(input);
+    let mut cpu = Cpu::new(input);
     let cycles = cpu.stack.len();
 
     let sum: i32 = (1..=cycles)
@@ -23,7 +23,7 @@ pub fn part_one(input: &str) -> Option<i32> {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let mut cpu = CPU::new(input);
+    let mut cpu = Cpu::new(input);
 
     let mut cyc = 1;
     while !cpu.stack.is_empty() {
@@ -43,26 +43,25 @@ pub fn part_two(input: &str) -> Option<u32> {
 }
 
 #[derive(Debug)]
-struct CPU {
+struct Cpu {
     reg: i32,
     stack: VecDeque<i32>,
 }
 
-impl CPU {
-    fn new(input: &str) -> CPU {
+impl Cpu {
+    fn new(input: &str) -> Cpu {
         let stack = input
             .lines()
-            .map(|s| match s {
+            .flat_map(|s| match s {
                 "noop" => vec![0],
                 s if s.starts_with("addx") => {
-                    vec![0, s.split_once(" ").unwrap().1.parse::<i32>().unwrap()]
+                    vec![0, s.split_once(' ').unwrap().1.parse::<i32>().unwrap()]
                 }
                 _ => unreachable!(),
             })
-            .flatten()
             .collect();
 
-        CPU { reg: 1, stack }
+        Cpu { reg: 1, stack }
     }
 
     fn tick(&mut self) {

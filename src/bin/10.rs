@@ -33,18 +33,18 @@ pub fn part_two(input: &str) -> Option<String> {
         .chunks(40)
         .into_iter()
         .map(|c| {
-            return c
+            c
                 .into_iter()
                 .enumerate()
                 .map(|(i, _)| {
                     cpu.tick();
                     if (cpu.reg - 1..=cpu.reg + 1).contains(&((i + 1) as i32)) {
-                        return "#";
+                        "#"
                     } else {
-                        return ".";
+                        "."
                     }
                 })
-                .collect();
+                .collect()
         })
         .collect();
 

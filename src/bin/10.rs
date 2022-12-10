@@ -7,7 +7,7 @@ pub fn part_one(input: &str) -> Option<i32> {
     let sum: i32 = (1..=cycles)
         .into_iter()
         .filter_map(|i| match i as i32 {
-            i if i == 20 || (i - 20) % 40 == 0 => {
+            i if i % 40 == 20 => {
                 let val = i * cpu.reg;
                 cpu.tick();
                 Some(val)
@@ -64,10 +64,11 @@ impl Cpu {
         Cpu { reg: 1, stack }
     }
 
-    fn tick(&mut self) {
+    fn tick(&mut self) -> i32 {
         if let Some(el) = self.stack.pop_front() {
             self.reg += el;
         }
+        self.reg
     }
 }
 

@@ -33,8 +33,7 @@ pub fn part_two(input: &str) -> Option<String> {
         .chunks(40)
         .into_iter()
         .map(|c| {
-            c
-                .into_iter()
+            c.into_iter()
                 .enumerate()
                 .map(|(i, _)| {
                     cpu.tick();
@@ -48,7 +47,7 @@ pub fn part_two(input: &str) -> Option<String> {
         })
         .collect();
 
-    Some(res.into_iter().collect())
+    Some(res.join("\n"))
 }
 
 #[derive(Debug)]
@@ -100,6 +99,7 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 10);
-        assert_eq!(part_two(&input), Some("#..##..##..##..##..##..##..##..##..##...##...###...###...###...###...###...###..###....####....####....####....####.....####.....#####.....#####.....#####......#####......######......######......####.######.......#######.......#######......".to_string()));
+        let str = "#..##..##..##..##..##..##..##..##..##...\n##...###...###...###...###...###...###..\n###....####....####....####....####.....\n####.....#####.....#####.....#####......\n#####......######......######......####.\n######.......#######.......#######......";
+        assert_eq!(part_two(&input), Some(str.to_string()));
     }
 }

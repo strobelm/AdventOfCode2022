@@ -1,4 +1,4 @@
-use pathfinding::prelude::dijkstra;
+use pathfinding::prelude::bfs;
 use std::collections::HashMap;
 
 pub fn part_one(input: &str) -> Option<i32> {
@@ -27,12 +27,12 @@ fn exec_dijsktra(input: &str, start_pos: (i32, i32), end_pos: (i32, i32)) -> i32
         .map(|l| l.chars().collect())
         .collect();
 
-    let calc_weight = |cur_pos: (i32, i32), next_pos: (i32, i32)| -> i32 {
+    let is_legit = |cur_pos: (i32, i32), next_pos: (i32, i32)| -> bool {
         let map_size = (map.len() as i32, map[0].len() as i32);
         let x_valid = (0..map_size.0).contains(&next_pos.0);
         let y_valid = (0..map_size.1).contains(&next_pos.1);
         if !x_valid || !y_valid {
-            return 99999;
+            return false;
         }
 
         let cur_pos_char = map
@@ -46,20 +46,37 @@ fn exec_dijsktra(input: &str, start_pos: (i32, i32), end_pos: (i32, i32)) -> i32
             .get(next_pos.1 as usize)
             .unwrap();
 
-        calc_dist(cur_pos_char, pos_char)
+        let value_map: HashMap<_, _> = HashMap::from_iter(
+            ('a'..='z')
+                .into_iter()
+                .enumerate()
+                .map(|(i, v)| (v, i as i32)),
+        );
+
+        let dist = value_map.get(pos_char).unwrap() - value_map.get(cur_pos_char).unwrap();
+
+        if dist > 1 {
+            false
+        } else {
+            true
+        }
     };
 
-    let result = dijkstra(
+    let result = bfs(
         &start_pos,
+        // &(1, 1),
         |&(x, y)| {
-            vec![(x, y + 1), (x - 1, y), (x + 1, y), (x, y - 1)]
-                .into_iter()
-                .map(move |p| (p, calc_weight((x, y), p)))
+            let vec = vec![(x, y + 1), (x - 1, y), (x + 1, y), (x, y - 1)];
+            let myiter: Vec<(i32, i32)> =
+                vec.into_iter().filter(|v| is_legit((x, y), *v)).collect();
+            myiter
+            // .collect::<Vec<(i32, i32)>>()
         },
         |&p| p == end_pos,
     )
     .unwrap();
-    result.1
+
+    result.len() as i32 - 1
 }
 
 fn find_start_end(input: &str) -> ((i32, i32), (i32, i32)) {

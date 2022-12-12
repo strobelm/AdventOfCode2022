@@ -10,56 +10,32 @@ pub fn part_one(input: &str) -> Option<u32> {
         .map(|l| l.chars().collect())
         .collect();
 
-    let map_size = (map.len() as i32, map[0].len() as i32);
-    let value_map: HashMap<_, _> = HashMap::from_iter(
-        ('a'..='z')
-            .into_iter()
-            .enumerate()
-            .map(|(i, v)| (v, i as i32)),
-    );
-
     let calc_weight = |cur_pos: (i32, i32), pos: (i32, i32)| -> i32 {
-        dbg!(cur_pos, pos);
+        let map_size = (map.len() as i32, map[0].len() as i32);
         let is_valid_pos = pos.0 >= 0 && pos.0 < map_size.0 && pos.1 >= 0 && pos.1 < map_size.1;
-
         if !is_valid_pos {
-            return 999;
+            return i16::MAX.into();
         }
 
-        let cur_pos_char = map
-            .get(cur_pos.0 as usize)
-            .unwrap()
-            .get(cur_pos.1 as usize)
-            .unwrap();
-        // if cur_pos_char == &'S' {
-        //     cur_pos_char = &'a';
-        // }
-        // if cur_pos_char == &'E' {
-        //     cur_pos_char = &'z';
-        // }
-        let pos_char = map
-            .get(pos.0 as usize)
-            .unwrap()
-            .get(pos.1 as usize)
-            .unwrap();
-        // if pos_char == &'E' {
-        //     pos_char = &'z';
-        // }
-        // if pos_char == &'S' {
-        //     pos_char = &'a';
-        // }
-        dbg!(value_map.get(cur_pos_char).unwrap());
-        dbg!(value_map.get(pos_char).unwrap());
-        //  , value_map.get(pos_char).unwrap())
+        let calc_pos = |pos: (i32, i32)| -> &char {
+            map.get(pos.0 as usize)
+                .unwrap()
+                .get(pos.1 as usize)
+                .unwrap()
+        };
 
-        let dist = (value_map.get(cur_pos_char).unwrap() - value_map.get(pos_char).unwrap()).abs();
-        dbg!(dist);
+        let cur_pos_char = calc_pos(cur_pos);
+        let pos_char = calc_pos(pos);
+
+        let dist = calc_dist(cur_pos_char, pos_char);
+
         if dist > 1 {
-            return 999;
+            return i16::MAX.into();
         } else {
             return 1;
         }
     };
+
     let result = dijkstra(
         &start_pos,
         |&(x, y)| {
@@ -70,8 +46,7 @@ pub fn part_one(input: &str) -> Option<u32> {
         |&p| p == end_pos,
     );
 
-    dbg!(result);
-    None
+    Some(result.unwrap().1 as u32)
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
@@ -80,7 +55,6 @@ pub fn part_two(input: &str) -> Option<u32> {
 
 fn find_start_end(input: &str) -> ((i32, i32), (i32, i32)) {
     let map: Vec<Vec<char>> = input.lines().map(|l| l.chars().collect()).collect();
-    let map_size = (map.len() as i32, map[0].len() as i32);
     let find_char = |c: char| -> (i32, i32) {
         map.iter()
             .position(|v| v.contains(&c))
@@ -97,6 +71,23 @@ fn find_start_end(input: &str) -> ((i32, i32), (i32, i32)) {
     (start, end)
 }
 
+fn calc_dist(cur_pos_char: &char, pos_char: &char) -> i32 {
+    let value_map: HashMap<_, _> = HashMap::from_iter(
+        ('a'..='z')
+            .into_iter()
+            .enumerate()
+            .map(|(i, v)| (v, i as i32)),
+    );
+
+    let dist = (value_map.get(cur_pos_char).unwrap() - value_map.get(pos_char).unwrap()).abs();
+
+    if dist > 1 {
+        return i16::MAX.into();
+    } else {
+        return 1;
+    }
+}
+
 fn main() {
     let input = &advent_of_code::read_file("inputs", 12);
     advent_of_code::solve!(1, part_one, input);
@@ -110,7 +101,7 @@ mod tests {
     #[test]
     fn test_part_one() {
         let input = advent_of_code::read_file("examples", 12);
-        assert_eq!(part_one(&input), None);
+        assert_eq!(part_one(&input), Some(31));
     }
 
     #[test]

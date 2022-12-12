@@ -2,10 +2,7 @@ use pathfinding::prelude::{bfs, Matrix};
 use std::str::FromStr;
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let problem = input.parse::<PathFinding>().ok()?;
-    let start = &problem.start;
-    let end = &problem.end;
-    let mat = &problem.mat;
+    let PathFinding { start, end, mat } = &input.parse::<PathFinding>().ok()?;
 
     let result = bfs(
         start,
@@ -22,9 +19,7 @@ pub fn part_one(input: &str) -> Option<u32> {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let problem = input.parse::<PathFinding>().ok()?;
-    let end = &problem.end;
-    let mat = &problem.mat;
+    let PathFinding { start: _, end, mat } = &input.parse::<PathFinding>().ok()?;
 
     let result = bfs(
         end,

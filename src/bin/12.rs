@@ -12,7 +12,9 @@ pub fn part_two(input: &str) -> Option<u32> {
     let all_a = find_a(input);
     let mut results: Vec<i32> = all_a
         .iter()
-        .map(|&start_pos_a| exec_bfs(input, start_pos_a, end_pos).unwrap_or(u16::MAX.into()))
+        .map(|&start_pos_a| {
+            exec_bfs(input, start_pos_a, end_pos).unwrap_or_else(|| u16::MAX.into())
+        })
         .collect();
 
     results.sort();
@@ -55,11 +57,7 @@ fn exec_bfs(input: &str, start_pos: (i32, i32), end_pos: (i32, i32)) -> Option<i
 
         let dist = value_map.get(pos_char).unwrap() - value_map.get(cur_pos_char).unwrap();
 
-        if dist > 1 {
-            false
-        } else {
-            true
-        }
+        dist <= 1
     };
 
     let result = bfs(

@@ -23,35 +23,39 @@ pub fn part_one(input: &str) -> Option<u32> {
         let is_valid_pos = pos.0 >= 0 && pos.0 < map_size.0 && pos.1 >= 0 && pos.1 < map_size.1;
 
         if !is_valid_pos {
-            return i32::MAX;
+            return 999;
         }
 
-        let mut cur_pos_char = map
+        let cur_pos_char = map
             .get(cur_pos.0 as usize)
             .unwrap()
             .get(cur_pos.1 as usize)
             .unwrap();
-        if cur_pos_char == &'S' {
-            cur_pos_char = &'a';
-        }
-        if cur_pos_char == &'E' {
-            cur_pos_char = &'z';
-        }
-        let mut pos_char = map
+        // if cur_pos_char == &'S' {
+        //     cur_pos_char = &'a';
+        // }
+        // if cur_pos_char == &'E' {
+        //     cur_pos_char = &'z';
+        // }
+        let pos_char = map
             .get(pos.0 as usize)
             .unwrap()
             .get(pos.1 as usize)
             .unwrap();
-        if pos_char == &'E' {
-            pos_char = &'z';
-        }
-        if pos_char == &'S' {
-            pos_char = &'a';
-        }
+        // if pos_char == &'E' {
+        //     pos_char = &'z';
+        // }
+        // if pos_char == &'S' {
+        //     pos_char = &'a';
+        // }
+        dbg!(value_map.get(cur_pos_char).unwrap());
+        dbg!(value_map.get(pos_char).unwrap());
+        //  , value_map.get(pos_char).unwrap())
+
         let dist = (value_map.get(cur_pos_char).unwrap() - value_map.get(pos_char).unwrap()).abs();
         dbg!(dist);
         if dist > 1 {
-            return i32::MAX;
+            return 999;
         } else {
             return 1;
         }

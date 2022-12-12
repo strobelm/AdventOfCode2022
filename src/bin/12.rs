@@ -85,9 +85,9 @@ fn find_a(input: &str) -> Vec<(i32, i32)> {
     let (m, n) = (map.len(), map[0].len());
 
     let mut a_pos = vec![];
-    for i in 0..m {
-        for j in 0..n {
-            if map[i][j] == 'a' || map[i][j] == 'S' {
+    for (i, v) in map.iter().enumerate().take(m) {
+        for (j, el) in v.iter().enumerate().take(n) {
+            if *el == 'a' || *el == 'S' {
                 a_pos.push((i as i32, j as i32));
             }
         }

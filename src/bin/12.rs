@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 pub fn part_one(input: &str) -> Option<i32> {
     let (start_pos, end_pos) = find_start_end(input);
-    let result = exec_dijsktra(input, start_pos, end_pos);
+    let result = exec_dijsktra(input, start_pos, end_pos).unwrap();
     Some(result)
 }
 
@@ -12,14 +12,14 @@ pub fn part_two(input: &str) -> Option<u32> {
     let all_a = find_a(input);
     let mut results: Vec<i32> = all_a
         .iter()
-        .map(|&start_pos_a| exec_dijsktra(input, start_pos_a, end_pos))
+        .map(|&start_pos_a| exec_dijsktra(input, start_pos_a, end_pos).unwrap_or(u16::MAX.into()))
         .collect();
 
     results.sort();
     Some(*results.iter().min().unwrap() as u32)
 }
 
-fn exec_dijsktra(input: &str, start_pos: (i32, i32), end_pos: (i32, i32)) -> i32 {
+fn exec_dijsktra(input: &str, start_pos: (i32, i32), end_pos: (i32, i32)) -> Option<i32> {
     let map: Vec<Vec<char>> = input
         .replace('S', "a")
         .replace('E', "z")
@@ -64,19 +64,16 @@ fn exec_dijsktra(input: &str, start_pos: (i32, i32), end_pos: (i32, i32)) -> i32
 
     let result = bfs(
         &start_pos,
-        // &(1, 1),
         |&(x, y)| {
-            let vec = vec![(x, y + 1), (x - 1, y), (x + 1, y), (x, y - 1)];
-            let myiter: Vec<(i32, i32)> =
-                vec.into_iter().filter(|v| is_legit((x, y), *v)).collect();
-            myiter
-            // .collect::<Vec<(i32, i32)>>()
+            vec![(x, y + 1), (x - 1, y), (x + 1, y), (x, y - 1)]
+                .into_iter()
+                .filter(|v| is_legit((x, y), *v))
+                .collect::<Vec<(i32, i32)>>()
         },
         |&p| p == end_pos,
-    )
-    .unwrap();
+    )?;
 
-    result.len() as i32 - 1
+    Some(result.len() as i32 - 1)
 }
 
 fn find_start_end(input: &str) -> ((i32, i32), (i32, i32)) {
@@ -111,23 +108,6 @@ fn find_a(input: &str) -> Vec<(i32, i32)> {
     }
 
     a_pos
-}
-
-fn calc_dist(cur_pos_char: &char, pos_char: &char) -> i32 {
-    let value_map: HashMap<_, _> = HashMap::from_iter(
-        ('a'..='z')
-            .into_iter()
-            .enumerate()
-            .map(|(i, v)| (v, i as i32)),
-    );
-
-    let dist = value_map.get(pos_char).unwrap() - value_map.get(cur_pos_char).unwrap();
-
-    if dist > 1 {
-        9999
-    } else {
-        1
-    }
 }
 
 fn main() {

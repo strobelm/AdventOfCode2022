@@ -1,7 +1,7 @@
 use pathfinding::prelude::dijkstra;
 use std::collections::HashMap;
 
-pub fn part_one(input: &str) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<i32> {
     let (start_pos, end_pos) = find_start_end(input);
     let map: Vec<Vec<char>> = input
         .replace('S', "a")
@@ -10,30 +10,26 @@ pub fn part_one(input: &str) -> Option<u32> {
         .map(|l| l.chars().collect())
         .collect();
 
-    let calc_weight = |cur_pos: (i32, i32), pos: (i32, i32)| -> i32 {
+    let calc_weight = |cur_pos: (i32, i32), next_pos: (i32, i32)| -> i32 {
         let map_size = (map.len() as i32, map[0].len() as i32);
-        let is_valid_pos = pos.0 >= 0 && pos.0 < map_size.0 && pos.1 >= 0 && pos.1 < map_size.1;
-        if !is_valid_pos {
-            return i16::MAX.into();
+        let x_valid = (0..map_size.0).contains(&next_pos.0);
+        let y_valid = (0..map_size.1).contains(&next_pos.1);
+        if !x_valid || !y_valid {
+            return 9999;
         }
 
-        let calc_pos = |pos: (i32, i32)| -> &char {
-            map.get(pos.0 as usize)
-                .unwrap()
-                .get(pos.1 as usize)
-                .unwrap()
-        };
+        let cur_pos_char = map
+            .get(cur_pos.0 as usize)
+            .unwrap()
+            .get(cur_pos.1 as usize)
+            .unwrap();
+        let pos_char = map
+            .get(next_pos.0 as usize)
+            .unwrap()
+            .get(next_pos.1 as usize)
+            .unwrap();
 
-        let cur_pos_char = calc_pos(cur_pos);
-        let pos_char = calc_pos(pos);
-
-        let dist = calc_dist(cur_pos_char, pos_char);
-
-        if dist > 1 {
-            return i16::MAX.into();
-        } else {
-            return 1;
-        }
+        calc_dist(cur_pos_char, pos_char)
     };
 
     let result = dijkstra(
@@ -46,7 +42,7 @@ pub fn part_one(input: &str) -> Option<u32> {
         |&p| p == end_pos,
     );
 
-    Some(result.unwrap().1 as u32)
+    Some(result.unwrap().0.len() as i32 - 1)
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
@@ -79,10 +75,10 @@ fn calc_dist(cur_pos_char: &char, pos_char: &char) -> i32 {
             .map(|(i, v)| (v, i as i32)),
     );
 
-    let dist = (value_map.get(cur_pos_char).unwrap() - value_map.get(pos_char).unwrap()).abs();
+    let dist = value_map.get(pos_char).unwrap() - value_map.get(cur_pos_char).unwrap();
 
     if dist > 1 {
-        return i16::MAX.into();
+        return 999;
     } else {
         return 1;
     }

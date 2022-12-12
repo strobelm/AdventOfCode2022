@@ -3,6 +3,23 @@ use std::collections::HashMap;
 
 pub fn part_one(input: &str) -> Option<i32> {
     let (start_pos, end_pos) = find_start_end(input);
+    let result = exec_dijsktra(input, start_pos, end_pos);
+    Some(result)
+}
+
+pub fn part_two(input: &str) -> Option<u32> {
+    let (_, end_pos) = find_start_end(input);
+    let all_a = find_a(input);
+    let mut results: Vec<i32> = all_a
+        .iter()
+        .map(|&start_pos_a| exec_dijsktra(input, start_pos_a, end_pos))
+        .collect();
+
+    results.sort();
+    Some(*results.iter().min().unwrap() as u32)
+}
+
+fn exec_dijsktra(input: &str, start_pos: (i32, i32), end_pos: (i32, i32)) -> i32 {
     let map: Vec<Vec<char>> = input
         .replace('S', "a")
         .replace('E', "z")
@@ -15,7 +32,7 @@ pub fn part_one(input: &str) -> Option<i32> {
         let x_valid = (0..map_size.0).contains(&next_pos.0);
         let y_valid = (0..map_size.1).contains(&next_pos.1);
         if !x_valid || !y_valid {
-            return 9999;
+            return 99999;
         }
 
         let cur_pos_char = map
@@ -40,13 +57,9 @@ pub fn part_one(input: &str) -> Option<i32> {
                 .map(move |p| (p, calc_weight((x, y), p)))
         },
         |&p| p == end_pos,
-    );
-
-    Some(result.unwrap().0.len() as i32 - 1)
-}
-
-pub fn part_two(input: &str) -> Option<u32> {
-    None
+    )
+    .unwrap();
+    result.1
 }
 
 fn find_start_end(input: &str) -> ((i32, i32), (i32, i32)) {
@@ -67,6 +80,22 @@ fn find_start_end(input: &str) -> ((i32, i32), (i32, i32)) {
     (start, end)
 }
 
+fn find_a(input: &str) -> Vec<(i32, i32)> {
+    let map: Vec<Vec<char>> = input.lines().map(|l| l.chars().collect()).collect();
+    let (m, n) = (map.len(), map[0].len());
+
+    let mut a_pos = vec![];
+    for i in 0..m {
+        for j in 0..n {
+            if map[i][j] == 'a' || map[i][j] == 'S' {
+                a_pos.push((i as i32, j as i32));
+            }
+        }
+    }
+
+    a_pos
+}
+
 fn calc_dist(cur_pos_char: &char, pos_char: &char) -> i32 {
     let value_map: HashMap<_, _> = HashMap::from_iter(
         ('a'..='z')
@@ -78,7 +107,7 @@ fn calc_dist(cur_pos_char: &char, pos_char: &char) -> i32 {
     let dist = value_map.get(pos_char).unwrap() - value_map.get(cur_pos_char).unwrap();
 
     if dist > 1 {
-        return 999;
+        return 9999;
     } else {
         return 1;
     }
@@ -103,6 +132,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 12);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(29));
     }
 }

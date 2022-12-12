@@ -108,6 +108,10 @@ struct Monkey {
 
 impl Monkey {
     fn build(input: &str) -> Self {
+        let re = Regex::new(r#"(?m)^Monkey (\d+):\n  Starting items: (\d+(?:, \d+)*)\n  Operation: new = old (?:\* (?:(\d+)|(old))|\+ (\d+))\n  Test: divisible by (\d+)\n    If true: throw to monkey (\d+)\n    If false: throw to monkey (\d+)$"#).unwrap();
+        let matches = re.captures(input).unwrap();
+        dbg!(matches);
+
         let items: VecDeque<u64> = Regex::new(r#"Starting items: (\d+(?:, \d+)*)\n"#)
             .unwrap()
             .captures(input)

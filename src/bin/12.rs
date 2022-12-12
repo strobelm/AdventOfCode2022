@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 pub fn part_one(input: &str) -> Option<i32> {
     let (start_pos, end_pos) = find_start_end(input);
-    let result = exec_dijsktra(input, start_pos, end_pos).unwrap();
+    let result = exec_bfs(input, start_pos, end_pos).unwrap();
     Some(result)
 }
 
@@ -12,14 +12,14 @@ pub fn part_two(input: &str) -> Option<u32> {
     let all_a = find_a(input);
     let mut results: Vec<i32> = all_a
         .iter()
-        .map(|&start_pos_a| exec_dijsktra(input, start_pos_a, end_pos).unwrap_or(u16::MAX.into()))
+        .map(|&start_pos_a| exec_bfs(input, start_pos_a, end_pos).unwrap_or(u16::MAX.into()))
         .collect();
 
     results.sort();
     Some(*results.iter().min().unwrap() as u32)
 }
 
-fn exec_dijsktra(input: &str, start_pos: (i32, i32), end_pos: (i32, i32)) -> Option<i32> {
+fn exec_bfs(input: &str, start_pos: (i32, i32), end_pos: (i32, i32)) -> Option<i32> {
     let map: Vec<Vec<char>> = input
         .replace('S', "a")
         .replace('E', "z")

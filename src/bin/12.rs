@@ -107,9 +107,9 @@ fn calc_dist(cur_pos_char: &char, pos_char: &char) -> i32 {
     let dist = value_map.get(pos_char).unwrap() - value_map.get(cur_pos_char).unwrap();
 
     if dist > 1 {
-        return 9999;
+        9999
     } else {
-        return 1;
+        1
     }
 }
 

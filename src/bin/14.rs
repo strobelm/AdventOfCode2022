@@ -54,7 +54,10 @@ impl Cave {
 
         let max_depth = obstacles.iter().map(|c| c.1).max().unwrap();
 
-        let sand = Sand { pos: (500, 0) };
+        let sand = Sand {
+            pos: (500, 0),
+            visited: vec![],
+        };
 
         Cave {
             obstacles,
@@ -68,6 +71,7 @@ impl Cave {
 
 #[derive(Debug, PartialEq, Eq)]
 struct Sand {
+    visited: Vec<Coord>,
     pos: Coord,
 }
 
@@ -104,13 +108,23 @@ impl Iterator for Cave {
             None => {
                 obstacles.insert(self.sand.pos);
                 *sand_counter += 1;
-                self.sand = Sand { pos: (500, 0) };
+                let visited = &self.sand.visited;
+                let new_start = if visited.len() > 1 {
+                    visited[visited.len() - 2]
+                } else {
+                    (500, 0)
+                };
+                self.sand = Sand {
+                    pos: new_start,
+                    visited: vec![],
+                };
             }
             Some(new_sand_pos) => {
                 if !*use_floor && new_sand_pos.1 > *max_depth {
                     return None;
                 }
-                self.sand = Sand { pos: *new_sand_pos };
+                self.sand.pos = *new_sand_pos;
+                self.sand.visited.push(*new_sand_pos);
             }
         }
 

@@ -1,5 +1,4 @@
-use std::collections::HashSet;
-
+use fxhash::FxHashSet;
 use itertools::Itertools;
 use regex::{self, Regex};
 
@@ -18,7 +17,7 @@ pub fn part_two(input: &str) -> Option<u32> {
 type Coord = (i32, i32);
 #[derive(Debug)]
 struct Cave {
-    obstacles: HashSet<Coord>,
+    obstacles: FxHashSet<Coord>,
     max_depth: i32,
     sand: Sand,
     sand_counter: u32,
@@ -28,7 +27,7 @@ struct Cave {
 impl Cave {
     fn new(input: &str, use_floor: bool) -> Self {
         let re = Regex::new(r#"(\d+),(\d+)"#).unwrap();
-        let obstacles: HashSet<(i32, i32)> = HashSet::from_iter(input.lines().flat_map(|l| {
+        let obstacles: FxHashSet<(i32, i32)> = FxHashSet::from_iter(input.lines().flat_map(|l| {
             re.captures_iter(l)
                 .map(|cap| {
                     (

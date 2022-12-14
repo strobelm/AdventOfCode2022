@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use fxhash::FxHashSet;
 use itertools::Itertools;
 use regex::{self, Regex};
@@ -56,7 +58,7 @@ impl Cave {
 
         let sand = Sand {
             pos: (500, 0),
-            visited: vec![],
+            visited: VecDeque::new(),
         };
 
         Cave {
@@ -71,7 +73,7 @@ impl Cave {
 
 #[derive(Debug, PartialEq, Eq)]
 struct Sand {
-    visited: Vec<Coord>,
+    visited: VecDeque<Coord>,
     pos: Coord,
 }
 
@@ -110,21 +112,20 @@ impl Iterator for Cave {
                 *sand_counter += 1;
                 let visited = &self.sand.visited;
                 let new_start = if visited.len() > 1 {
-                    visited[visited.len() - 2]
+                    visited[1]
                 } else {
                     (500, 0)
                 };
-                self.sand = Sand {
-                    pos: new_start,
-                    visited: vec![],
-                };
+                self.sand.pos = new_start;
+                self.sand.visited.clear();
             }
             Some(new_sand_pos) => {
                 if !*use_floor && new_sand_pos.1 > *max_depth {
                     return None;
                 }
-                self.sand.pos = *new_sand_pos;
-                self.sand.visited.push(*new_sand_pos);
+                sand.pos = *new_sand_pos;
+                sand.visited.push_front(*new_sand_pos);
+                sand.visited.truncate(2);
             }
         }
 

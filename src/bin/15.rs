@@ -1,43 +1,56 @@
 use regex::Regex;
 
 pub fn part_one(input: &str) -> Option<usize> {
-    let y = 2000000;
+    let y: i64 = 2000000;
+
     let sensors: Vec<Sensor> = parse_sensors(input);
-    let beacons_in_row: Vec<Point> = sensors
-        .iter()
-        .map(|s| s.closest_beacon)
-        .filter(|b| b.y == y)
-        .collect();
 
-    let coords = -9000000..9000000;
-    let mut covered: Vec<i32> = vec![];
-    'outer: for c in coords {
-        for i in 0..sensors.len() {
-            let sensor = sensors[i];
-            if manhattan_dist(&sensor.pos, &Point { x: c, y }) <= sensor.manh_dist {
-                covered.push(c);
-                continue 'outer;
-            }
-        }
-    }
+    let lower = sensors.iter().map(|s| s.pos.x - s.manh_dist).min().unwrap();
+    let upper = sensors.iter().map(|s| s.pos.x + s.manh_dist).max().unwrap();
+    let res = (lower..=upper)
+        .filter(|&x| sensors.iter().any(|s| s.is_inside_range(Point { x, y })))
+        .count();
 
-    Some(covered.len() - beacons_in_row.len())
+    Some(res)
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<i64> {
+    let sensors: Vec<Sensor> = parse_sensors(input);
+    let max: i64 = 4000000;
+
+    sensors.iter().find_map(|s| {
+        ((s.pos.x - s.manh_dist - 1).max(0)..=s.pos.x.min(max))
+            .zip(s.pos.y..=max)
+            .find_map(|p| {
+                sensors
+                    .iter()
+                    .all(|s| !s.is_inside_range(Point { x: p.0, y: p.1 }))
+                    .then_some(p.0 * 4000000 + p.1)
+            })
+    })
 }
 
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
 struct Point {
-    x: i32,
-    y: i32,
+    x: i64,
+    y: i64,
 }
 #[derive(Debug, Clone, Copy)]
 struct Sensor {
     pos: Point,
     closest_beacon: Point,
-    manh_dist: i32,
+    manh_dist: i64,
+}
+impl Sensor {
+    pub fn is_inside_range(&self, p: Point) -> bool {
+        if self.closest_beacon == p {
+            return false;
+        }
+        self.manh_dist
+            >= (self.pos.x.abs_diff(p.x) + self.pos.y.abs_diff(p.y))
+                .try_into()
+                .unwrap()
+    }
 }
 
 fn parse_sensors(input: &str) -> Vec<Sensor> {
@@ -70,7 +83,7 @@ fn parse_sensors(input: &str) -> Vec<Sensor> {
 }
 
 #[inline]
-fn manhattan_dist(p: &Point, q: &Point) -> i32 {
+fn manhattan_dist(p: &Point, q: &Point) -> i64 {
     (p.x - q.x).abs() + (p.y - q.y).abs()
 }
 
@@ -87,12 +100,12 @@ mod tests {
     #[test]
     fn test_part_one() {
         let input = advent_of_code::read_file("examples", 15);
-        assert_eq!(part_one(&input), Some(26));
+        assert_eq!(part_one(&input), Some(0));
     }
 
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 15);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(28000022));
     }
 }

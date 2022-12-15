@@ -5,8 +5,16 @@ pub fn part_one(input: &str) -> Option<usize> {
 
     let sensors: Vec<Sensor> = parse_sensors(input);
 
-    let lower = sensors.iter().map(|s| s.pos.x - s.manh_dist).min().unwrap();
-    let upper = sensors.iter().map(|s| s.pos.x + s.manh_dist).max().unwrap();
+    let lower = sensors
+        .iter()
+        .map(|s| s.pos.x - s.manh_dist as i64)
+        .min()
+        .unwrap();
+    let upper = sensors
+        .iter()
+        .map(|s| s.pos.x + s.manh_dist as i64)
+        .max()
+        .unwrap();
     let res = (lower..=upper)
         .filter(|&x| sensors.iter().any(|s| s.is_inside_range(Point { x, y })))
         .count();
@@ -19,7 +27,7 @@ pub fn part_two(input: &str) -> Option<i64> {
     let max: i64 = 4000000;
 
     sensors.iter().find_map(|s| {
-        ((s.pos.x - s.manh_dist - 1).max(0)..=s.pos.x.min(max))
+        ((s.pos.x - s.manh_dist as i64 - 1).max(0)..=s.pos.x.min(max))
             .zip(s.pos.y..=max)
             .find_map(|p| {
                 sensors
@@ -39,7 +47,7 @@ struct Point {
 struct Sensor {
     pos: Point,
     closest_beacon: Point,
-    manh_dist: i64,
+    manh_dist: u32,
 }
 impl Sensor {
     pub fn is_inside_range(&self, p: Point) -> bool {
@@ -83,8 +91,8 @@ fn parse_sensors(input: &str) -> Vec<Sensor> {
 }
 
 #[inline]
-fn manhattan_dist(p: &Point, q: &Point) -> i64 {
-    (p.x - q.x).abs() + (p.y - q.y).abs()
+fn manhattan_dist(p: &Point, q: &Point) -> u32 {
+    ((p.x - q.x).abs() + (p.y - q.y).abs()) as u32
 }
 
 fn main() {

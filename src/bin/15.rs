@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use regex::Regex;
 
 pub fn part_one(input: &str) -> Option<usize> {
@@ -5,21 +6,20 @@ pub fn part_one(input: &str) -> Option<usize> {
 
     let sensors: Vec<Sensor> = parse_sensors(input);
 
-    let lower = sensors
+    let min_max = sensors
         .iter()
-        .map(|s| s.pos.x - s.manh_dist as i64)
-        .min()
-        .unwrap();
-    let upper = sensors
-        .iter()
-        .map(|s| s.pos.x + s.manh_dist as i64)
-        .max()
-        .unwrap();
-    let res = (lower..=upper)
-        .filter(|&x| sensors.iter().any(|s| s.is_inside_range(Point { x, y })))
-        .count();
+        .flat_map(|s| [s.pos.x - s.manh_dist as i64, s.pos.x + s.manh_dist as i64])
+        .minmax();
+    let (lower, upper) = match min_max {
+        itertools::MinMaxResult::MinMax(min, max) => (min, max),
+        _ => unreachable!(),
+    };
 
-    Some(res)
+    Some(
+        (lower..=upper)
+            .filter(|&x| sensors.iter().any(|s| s.is_inside_range(Point { x, y })))
+            .count(),
+    )
 }
 
 pub fn part_two(input: &str) -> Option<i64> {
